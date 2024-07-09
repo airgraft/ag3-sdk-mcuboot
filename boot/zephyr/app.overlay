@@ -1,5 +1,139 @@
 / {
 	chosen {
 		zephyr,code-partition = &boot_partition;
+		nordic,pm-ext-flash = &py25q40hb;
 	};
+
+    zephyr,user {
+		tp2_gpios = <&gpio0 2 0>;
+        tp5pin_gpios = <&gpio0 8 0>;
+        io-channels = <&adc 0>,<&adc 1>;
+	};
+
+    vbatt {
+        compatible = "voltage-divider";
+        io-channels = <&adc 6>;
+        output-ohms = <180000>;
+        full-ohms = <(180000 + 180000)>;
+        //power-gpios = <&sx1509b 4 0>;
+     };
+};
+
+&i2c0 {
+
+	is31fl3206: is31fl3206_i2c@6c{
+        compatible = "i2c-device";
+        //status = "okay";
+        reg = < 0x6c>;
+        label = "IS31FL3206 ";
+    };
+    clock-frequency = <I2C_BITRATE_FAST>;
+};
+
+&i2c1 {
+    podmem: pod_mem@50{
+        compatible = "i2c-device";
+        //status = "okay";
+        reg = < 0x50>;
+        label = "POD MEMORY";
+    };
+    podmemid: podmem_id@58{
+        compatible = "i2c-device";
+        //status = "okay";
+        reg = < 0x58>;
+        label = "POD MEMORY ID PAGE";
+    };
+    clock-frequency = <I2C_BITRATE_FAST>;
+};
+
+
+&spi2{
+    cs-gpios = <&gpio0 11 GPIO_ACTIVE_LOW>;
+
+    py25q40hb: py25q40hb@0 {
+		compatible = "jedec,spi-nor";
+		label = "PY25Q40HB";
+		reg = <0>;
+		spi-max-frequency = <1000000>;
+		//wp-gpios = <&gpio0 8 GPIO_ACTIVE_LOW>;
+		//hold-gpios = <&gpio0 10 GPIO_ACTIVE_LOW>;
+		size = <0x400000>;
+		has-dpd;
+		t-enter-dpd = <3000>;
+		t-exit-dpd = <30000>;
+		jedec-id = [85 20 13];
+		status = "okay"; 
+	};
+};
+
+&nfct {
+	status = "okay";
+};
+
+&timer2 {
+	status = "okay";
+};
+
+&timer4 {
+	status = "okay";
+};
+
+&gpiote {
+	status = "okay";
+};
+
+&ppi {
+	status = "okay";
+};
+
+&adc {
+	status = "okay";
+    compatible = "nordic,nrf-saadc";    
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	channel@0 {
+		reg = <0>;
+		zephyr,gain = "ADC_GAIN_1_6";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,input-positive = <NRF_SAADC_AIN6>;
+		zephyr,resolution = <12>;
+	};
+
+    channel@1 {
+		reg = <1>;
+		zephyr,gain = "ADC_GAIN_1_6";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,input-positive = <NRF_SAADC_AIN7>;
+		zephyr,resolution = <12>;
+	};
+
+    channel@2 {
+		reg = <2>;
+		zephyr,gain = "ADC_GAIN_1_6";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,input-positive = <NRF_SAADC_AIN2>;
+		zephyr,resolution = <12>;
+	};
+
+
+    channel@3 {
+		reg = <3>;
+		zephyr,gain = "ADC_GAIN_1_6";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,input-positive = <NRF_SAADC_AIN5>;
+		zephyr,resolution = <12>;
+	};
+};
+
+&egu0 {
+    status = "okay";
+};
+
+&comp {
+	compatible = "nordic,nrf-lpcomp";
 };
