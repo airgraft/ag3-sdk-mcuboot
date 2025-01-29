@@ -2322,11 +2322,24 @@ context_boot_go(struct boot_loader_state *state, struct boot_rsp *rsp)
             rc = flash_area_open(fa_id, &BOOT_IMG_AREA(state, slot));
             assert(rc == 0);
 
-            if (rc != 0) {
-                BOOT_LOG_ERR("Failed to open flash area ID %d (image %d slot %d): %d, "
-                             "cannot continue", fa_id, image_index, (int8_t)slot, rc);
-                FIH_PANIC;
+#if 0
+             if (rc != 0) {
+                 BOOT_LOG_ERR("Failed to open flash area ID %d (image %d slot %d): %d, "
+                              "cannot continue", fa_id, image_index, (int8_t)slot, rc);
+                 FIH_PANIC;
+             }
+#else
+            if(rc !=0) {
+                            /* Log an error for secondary slot failure and continue */
+                if (slot == 1) { // Secondary slot
+                    BOOT_LOG_WRN("Failed to open secondary flash area ID %d (image %d slot %d): %d, "
+                                "proceeding with primary slot only", fa_id, image_index, slot, rc);
+                    BOOT_IMG_AREA(state, slot) = NULL; // Mark as unavailable
+                    continue;
+                }
             }
+#endif
+
         }
 #if MCUBOOT_SWAP_USING_SCRATCH
         rc = flash_area_open(FLASH_AREA_IMAGE_SCRATCH,
