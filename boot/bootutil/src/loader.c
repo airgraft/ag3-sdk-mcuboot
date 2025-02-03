@@ -2322,7 +2322,7 @@ context_boot_go(struct boot_loader_state *state, struct boot_rsp *rsp)
             rc = flash_area_open(fa_id, &BOOT_IMG_AREA(state, slot));
             assert(rc == 0);
 
-#if 0
+#if 1
              if (rc != 0) {
                  BOOT_LOG_ERR("Failed to open flash area ID %d (image %d slot %d): %d, "
                               "cannot continue", fa_id, image_index, (int8_t)slot, rc);
